@@ -32,6 +32,8 @@ Note, however, that if you want to do this, you'll need to pass the `--net=host`
 
 Included in this image is support for Ceph/RBD volumes.  In order to use Ceph, you should probably bind-mount your `/etc/ceph` directory which contains your ceph.conf and client keyring.  I use `docker run -v /etc/ceph:/etc/ceph` for this purpose on my CoreOS boxes.
 
+NOTE:  using qemu's bridge networking with docker's `--net=host` with RBD block storage creates switch loops for me, even with STP.  Removing any one of those three seems to work fine.  To work around this problem, I also created `ulexus/qemu-bootstrap` which executes this Docker image from systemd's systemd-nspawn, which does not exhibit this problem.  That build is pretty installation-specific for me, but if anyone has an interest in it, I'll see about putting the effort into genericizing it.
+
 ## Service file
 
 Also included in this repo is a service file, suitable for use with systemd (CoreOS and fleet), provided as an example.  You'll need to fill in your own values, of course, and customize it to your liking.

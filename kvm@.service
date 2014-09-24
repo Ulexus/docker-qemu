@@ -1,0 +1,18 @@
+[Unit]
+Description=QEMU - VM%i
+After=docker.service
+
+[Service]
+EnvironmentFile=/etc/environment
+Environment=BRIDGE_IF=public
+Environment=INSTANCE=%i
+Environment=HOSTNAME=%H
+ExecStartPre=/usr/bin/docker pull ulexus/qemu-bootstrap
+ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/install ulexus/qemu-bootstrap
+ExecStart=/opt/bin/qemu_wrapper.sh
+Restart=always
+RestartSec=10s
+Type=notify
+NotifyAccess=all
+TimeoutStartSec=120
+TimeoutStopSec=15

@@ -36,7 +36,3 @@ Included in this image is support for Ceph/RBD volumes.  In order to use Ceph, y
 
 Also included in this repo is a service file, suitable for use with systemd (CoreOS and fleet), provided as an example.  You'll need to fill in your own values, of course, and customize it to your liking.
 
-## Example
-
-The service file `kvm@8.service` is provided as an example, using bridged networking and a Ceph/RBD volume.
-

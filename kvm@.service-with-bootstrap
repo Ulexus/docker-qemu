@@ -7,11 +7,11 @@ EnvironmentFile=/etc/environment
 Environment=BRIDGE_IF=public
 Environment=INSTANCE=%i
 Environment=HOSTNAME=%H
-ExecStartPre=-/usr/sbin/modprobe kvm
-ExecStartPre=-/usr/sbin/modprobe tun
+ExecStartPre=/usr/bin/docker pull ulexus/qemu-bootstrap
+ExecStartPre=/usr/bin/docker run --rm -v /opt/bin:/install ulexus/qemu-bootstrap
 ExecStartPre=-/usr/bin/etcdctl mk /kvm/${INSTANCE}/host ${HOSTNAME}
 ExecStartPre=/usr/bin/etcdctl set --swap-with-value ${HOSTNAME} /kvm/${INSTANCE}/host ${HOSTNAME}
-ExecStart=/opt/bin/systemd-docker --env run --rm --privileged --net=host --pid=host --ipc=host ulexus/qemu
+ExecStart=/opt/bin/qemu_wrapper.sh
 ExecStopPost=-/usr/bin/etcdctl rm --with-value ${HOSTNAME} /kvm/${INSTANCE}/host
 Restart=always
 RestartSec=10s

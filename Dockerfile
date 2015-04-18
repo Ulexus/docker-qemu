@@ -13,7 +13,7 @@ RUN apt-get -y upgrade
 RUN apt-get -y install qemu-kvm
 
 # Install Ceph common utilities/libraries
-RUN apt-get -y install ceph-common
+RUN apt-get -y install ceph-common wget
 
 # Install etcdctl
 RUN wget -q -O- "https://github.com/coreos/etcd/releases/download/${ETCDCTL_VERSION}/etcd-${ETCDCTL_VERSION}-${ETCDCTL_ARCH}.tar.gz" |tar xfz - -C/tmp/ etcd-${ETCDCTL_VERSION}-${ETCDCTL_ARCH}/etcdctl

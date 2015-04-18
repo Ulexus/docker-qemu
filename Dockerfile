@@ -1,6 +1,6 @@
 # QEMU/KVM 
-# VERSION 0.3
-FROM stackbrew/ubuntu:trusty
+# VERSION 0.5
+FROM ubuntu:trusty
 MAINTAINER ulexus@gmail.com
 
 RUN apt-get -y update

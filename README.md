@@ -18,7 +18,7 @@ While this is obviously not ideal, it isn't actually _that_ bad, since you are r
 
 ## Why
 
-It's better not to ask.  I really like CoreOS (http://coreos.com), and I am in the process of migrating all my servers over to it.  That means I need somewhere to put all my various full VMs.  While many components can be converted over to Docker-native formats, some customers want or need full VMs even still.  Rather than have a separate OpenStack or Corosync+libvirt system, I can now simply use CoreOS and fleet.
+Basically, this allows me to run QEMU hosts with storage on RBD on my favorite server OS:  [http://coreos.com](CoreOS).
 
 ## Networking
 
@@ -32,9 +32,20 @@ Note, however, that if you want to do this, you'll need to pass the `--net=host`
 
 Included in this image is support for Ceph/RBD volumes.  In order to use Ceph, you should probably bind-mount your `/etc/ceph` directory which contains your ceph.conf and client keyring.  I use `docker run -v /etc/ceph:/etc/ceph` for this purpose on my CoreOS boxes.
 
-NOTE:  using qemu's bridge networking with docker's `--net=host` with RBD block storage creates switch loops for me, even with STP.  Removing any one of those three seems to work fine.  To work around this problem, I also created `ulexus/qemu-bootstrap` which executes this Docker image from systemd's systemd-nspawn, which does not exhibit this problem.  That build is pretty installation-specific for me, but if anyone has an interest in it, I'll see about putting the effort into genericizing it.
+NOTE:  using qemu's bridge networking with docker's `--net=host` with RBD block storage creates switch loops for me, even with STP.  Removing any one of those three seems to work fine.  To work around this problem, you can also run with `--privileged --pid=host --ipc=host`.
 
 ## Service file
 
 Also included in this repo is a service file, suitable for use with systemd (CoreOS and fleet), provided as an example.  You'll need to fill in your own values, of course, and customize it to your liking.
 
+## Entrypoint script
+
+The entrypoint script is site-specific for me, but you can override most of it simply by passing arguments to the execution of this container (which will, in turn, be passed as arguments to `qemu`).
+
+If you intend to use the entrypoint script as is, it expects `etcd` to be populated with some keys.  (`%i` below refers to the unit instance, such as `1` for the unit `kvm@1`):
+  * `/kvm/%i/host` - Should match host's hostname; used as a mutex for this VM
+  * `/kvm/%i/ram` - The amount of RAM to allocate to this VM
+  * `/kvm/%i/mac` - The MAC address to assign to the NIC of this VM
+  * `/kvm/%i/rbd` - The RBD image (of the form `/<pool-name>/<rbd-name>`)
+  * `/kvm/%i/spice_port` - The TCP port to use for the spice server
+  * `/kvm/%i/extra_flags` - (optional) Free-form qemu flags to append

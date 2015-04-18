@@ -11,7 +11,7 @@ ExecStartPre=-/usr/sbin/modprobe kvm
 ExecStartPre=-/usr/sbin/modprobe tun
 ExecStartPre=-/usr/bin/etcdctl mk /kvm/${INSTANCE}/host ${HOSTNAME}
 ExecStartPre=/usr/bin/etcdctl set --swap-with-value ${HOSTNAME} /kvm/${INSTANCE}/host ${HOSTNAME}
-ExecStart=/opt/bin/systemd-docker --env run --rm --privileged --net=host --pid=host --ipc=host ulexus/qemu
+ExecStart=/opt/bin/systemd-docker --env run --rm --privileged --net=host --pid=host --ipc=host -v /etc/ceph:/etc/ceph ulexus/qemu
 ExecStopPost=-/usr/bin/etcdctl rm --with-value ${HOSTNAME} /kvm/${INSTANCE}/host
 Restart=always
 RestartSec=10s

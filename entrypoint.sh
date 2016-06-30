@@ -23,7 +23,9 @@ fi
 
 # If we have a BRIDGE_IF set, add it to /etc/qemu/bridge.conf
 if [ -n "$BRIDGE_IF" ]; then
-   echo "allow $BRIDGE_IF" >/etc/qemu/bridge.conf
+   if [ -e /etc/qemu/bridge.conf ]; then
+      echo "allow $BRIDGE_IF" >/etc/qemu/bridge.conf
+   fi
 
    # Make sure we have the tun device node
    if [ ! -e /dev/net/tun ]; then

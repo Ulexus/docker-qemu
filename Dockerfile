@@ -1,9 +1,9 @@
 # QEMU/KVM 
-# VERSION 0.5
+# VERSION 0.7
 FROM ubuntu:xenial
 MAINTAINER ulexus@gmail.com
 
-ENV ETCDCTL_VERSION v2.3.7
+ENV ETCDCTL_VERSION v3.0.12
 ENV ETCDCTL_ARCH linux-amd64
 
 RUN apt-get -y update

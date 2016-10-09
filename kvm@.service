@@ -4,18 +4,24 @@ After=docker.service
 
 [Service]
 EnvironmentFile=/etc/environment
-Environment=BRIDGE_IF=public
 Environment=INSTANCE=%i
 Environment=HOSTNAME=%H
+ExecStartPre=-/usr/bin/docker kill kvm-%i
+ExecStartPre=-/usr/bin/docker rm kvm-%i
 ExecStartPre=-/usr/sbin/modprobe kvm
 ExecStartPre=-/usr/sbin/modprobe tun
 ExecStartPre=-/usr/bin/etcdctl mk /kvm/${INSTANCE}/host ${HOSTNAME}
 ExecStartPre=/usr/bin/etcdctl set --swap-with-value ${HOSTNAME} /kvm/${INSTANCE}/host ${HOSTNAME}
-ExecStart=/opt/bin/systemd-docker --env run --rm --privileged --net=host --pid=host --ipc=host -v /etc/ceph:/etc/ceph ulexus/qemu
+ExecStart=/usr/bin/docker run --rm --privileged --net=host --pid=host --ipc=host --name kvm-%i \
+   -e BRIDGE_IF=public \
+   -e INSTANCE=${INSTANCE} \
+   -e HOSTNAME=${HOSTNAME} \
+   -v /etc/ceph:/etc/ceph \
+   ulexus/qemu
+ExecStopPost=-/usr/bin/docker stop kvm-%i
+ExecStopPost=-/usr/bin/docker rm kvm-%i
 ExecStopPost=-/usr/bin/etcdctl rm --with-value ${HOSTNAME} /kvm/${INSTANCE}/host
 Restart=always
 RestartSec=10s
-Type=notify
-NotifyAccess=all
 TimeoutStartSec=120
 TimeoutStopSec=15

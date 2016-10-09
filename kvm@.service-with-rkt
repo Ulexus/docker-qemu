@@ -1,0 +1,25 @@
+[Unit]
+Description=QEMU - VM%i
+After=docker.service
+
+[Service]
+EnvironmentFile=/etc/environment
+Environment=INSTANCE=%i
+Environment=HOSTNAME=%H
+Environment=BRIDGE_IF=public
+ExecStartPre=-/usr/sbin/modprobe kvm
+ExecStartPre=-/usr/sbin/modprobe tun
+ExecStartPre=-/usr/bin/etcdctl mk /kvm/${INSTANCE}/host ${HOSTNAME}
+ExecStartPre=/usr/bin/etcdctl set --swap-with-value ${HOSTNAME} /kvm/${INSTANCE}/host ${HOSTNAME}
+ExecStart=/usr/bin/rkt run \
+   --trust-keys-from-https \
+   --inherit-env \
+   --volume=ceph,kind=host,source=/etc/ceph \
+   --mount volume=ceph,target=/etc/ceph \
+   --stage1-from-dir=stage1-fly.aci \
+   quay.io/cycore/qemu
+ExecStopPost=-/usr/bin/etcdctl rm --with-value ${HOSTNAME} /kvm/${INSTANCE}/host
+Restart=always
+RestartSec=10s
+TimeoutStartSec=120
+TimeoutStopSec=15

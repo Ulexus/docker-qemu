@@ -4,7 +4,6 @@
 
 Please use the [more modern](https://github.com/tianon/dockerfiles/tree/master/qemu) `qemu` Docker images, (`docker pull tianon/qemu`) now.
 
-
 ## Usage
 
 0. `docker pull ulexus/qemu`
